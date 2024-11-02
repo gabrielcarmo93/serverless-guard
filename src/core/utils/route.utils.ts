@@ -34,6 +34,22 @@ export function registerControllers(app: express.Application, showRoutes: boolea
     app.use(basePath, exRouter);
   });
   
-  if (showRoutes)
-    console.table(info);
+  if (showRoutes) {
+    const infos = info.map(({api, handler}) => {
+      const [method, rawRoute] = api.split(" ")
+
+      const controller = rawRoute.split("/")[1]
+      
+      return {
+        api, handler, method, controller,
+      }
+    }).sort((a, b) => {
+      const routeCompare = a.controller.localeCompare(b.controller);
+      if (routeCompare !== 0) return routeCompare;
+      
+      return a.method.localeCompare(b.method);
+    })
+
+    console.table(infos);
+  }
 }
